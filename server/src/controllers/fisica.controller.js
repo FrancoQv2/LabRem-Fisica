@@ -4,7 +4,9 @@ import { QueryTypes } from "sequelize";
 const fisicaController = {};
 
 /**
- * @return {array} array de laboratorios de Telecomunicaciones
+ * -----------------------------------------------------
+ * Function - getLaboratorios
+ * -----------------------------------------------------
  */
 fisicaController.getLaboratorios = async (req, res) => {
   const response = await sequelize.query(
@@ -12,16 +14,18 @@ fisicaController.getLaboratorios = async (req, res) => {
     {
       type: QueryTypes.SELECT,
     }
-  );
+    );
   console.log(typeof response);
   console.log(response);
 
   await res.send(response);
 };
 
+
 /**
- * @param {number} idLaboratorio
- * @return {object} informacion de un laboratorio en particular
+ * -----------------------------------------------------
+ * Function - getLaboratorioById
+ * -----------------------------------------------------
  */
 fisicaController.getLaboratorioById = async (req, res) => {
   const { idLaboratorio } = req.params;
@@ -39,14 +43,13 @@ fisicaController.getLaboratorioById = async (req, res) => {
   await res.send(response[0]);
 };
 
-export { fisicaController };
 
 /**
  * -----------------------------------------------------
  * Function - getEnsayosUsuario
  * -----------------------------------------------------
  */
- telecoController.getEnsayosUsuario = async (req, res) => {
+fisicaController.getEnsayosUsuario = async (req, res) => {
   console.log(req.params);
     
   const { idLaboratorio, idUsuario } = req.params;
@@ -90,3 +93,5 @@ export { fisicaController };
   
   await res.send(JSON.stringify(dataParsed));
 };
+
+export { fisicaController };

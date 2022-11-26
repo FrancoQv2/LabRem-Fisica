@@ -6,7 +6,9 @@ const idLaboratorio = 1;
 const divergenteController = {};
 
 /**
- * @return {array} todos los ensayos realizados para el laboratorio de Wifi
+ * -----------------------------------------------------
+ * Function - getEnsayosDivergente
+ * -----------------------------------------------------
  */
 divergenteController.getEnsayosDivergente = async (req, res) => {
   console.log(req.params);
@@ -41,7 +43,7 @@ divergenteController.getEnsayosDivergente = async (req, res) => {
 
 /**
  * -----------------------------------------------------
- * Function - postLabWifi
+ * Function - postLabDivergente
  * -----------------------------------------------------
  */
 divergenteController.postLabDivergente = (req, res) => {

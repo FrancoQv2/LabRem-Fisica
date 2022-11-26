@@ -17,29 +17,29 @@ services:
       labrem:
         aliases:
           - fisica-db
-  server:
-    depends_on:
-      - db
-    container_name: fisica-server
-    build: ./server
-    restart: unless-stopped
-    env_file: ./.env
-    ports:
-      - $SERVER_LOCAL_PORT:$SERVER_DOCKER_PORT
-    environment:
-      - DB_HOST=$DB_HOST
-      - DB_DIALECT=$DB_DIALECT
-      - SERVER_PORT=$SERVER_DOCKER_PORT
-      - DB_USER=$MYSQLDB_USER
-      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - DB_NAME=$MYSQLDB_DATABASE
-      - DB_PORT=$MYSQLDB_DOCKER_PORT
-    stdin_open: true
-    tty: true
-    networks:
-      labrem:
-        aliases:
-          - fisica-server
+  # server:
+  #   depends_on:
+  #     - db
+  #   container_name: fisica-server
+  #   build: ./server
+  #   restart: unless-stopped
+  #   env_file: ./.env
+  #   ports:
+  #     - $SERVER_LOCAL_PORT:$SERVER_DOCKER_PORT
+  #   environment:
+  #     - DB_HOST=$DB_HOST
+  #     - DB_DIALECT=$DB_DIALECT
+  #     - SERVER_PORT=$SERVER_DOCKER_PORT
+  #     - DB_USER=$MYSQLDB_USER
+  #     - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+  #     - DB_NAME=$MYSQLDB_DATABASE
+  #     - DB_PORT=$MYSQLDB_DOCKER_PORT
+  #   stdin_open: true
+  #   tty: true
+  #   networks:
+  #     labrem:
+  #       aliases:
+  #         - fisica-server
 networks:
   labrem:
     name: labrem-net

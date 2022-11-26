@@ -6,9 +6,11 @@ const idLaboratorio = 2;
 const convergenteController = {};
 
 /**
- * @return {array} todos los ensayos realizados para el laboratorio de Radio
+ * -----------------------------------------------------
+ * Function - getEnsayosConvergente
+ * -----------------------------------------------------
  */
- convergenteController.getEnsayosConvergente = async (req, res) => {
+convergenteController.getEnsayosConvergente = async (req, res) => {
   console.log(req.params);
 
   const response = await sequelize.query(
@@ -43,7 +45,7 @@ const convergenteController = {};
  * Function - postLabConvergente
  * -----------------------------------------------------
  */
- convergenteController.postLabConvergente = (req, res) => {
+convergenteController.postLabConvergente = (req, res) => {
   const {
     idUsuario,
     distanciaLente,

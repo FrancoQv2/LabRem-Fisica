@@ -20,12 +20,15 @@ services:
   server:
     depends_on:
       - db
-    container_name: fisica-server-dev
-    build: ./server
+    container_name: fisica-dev
+    build:
+      context: server
+      dockerfile: ./server/Dockerfile.dev
     restart: unless-stopped
     env_file: ./.env
     ports:
-      - $SERVER_LOCAL_TEST_PORT:$SERVER_DOCKER_PORT
+      # - $SERVER_LOCAL_TEST_PORT:$SERVER_DOCKER_PORT
+      - 3031:3000
     environment:
       - DB_HOST=$DB_HOST
       - DB_DIALECT=$DB_DIALECT
@@ -41,7 +44,7 @@ services:
     networks:
       labrem:
         aliases:
-          - fisica-server-dev
+          - fisica-dev
 networks:
   labrem:
     name: labrem-net
