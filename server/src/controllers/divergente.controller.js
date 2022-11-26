@@ -1,7 +1,7 @@
 import { sequelize } from "../index.js";
 import { QueryTypes } from "sequelize";
 
-const idLaboratorio = 1;
+const idLaboratorio = 2;
 
 const divergenteController = {};
 
@@ -14,7 +14,7 @@ divergenteController.getEnsayosDivergente = async (req, res) => {
   console.log(req.params);
 
   const response = await sequelize.query(
-    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE Laboratorios_idLaboratorio = 3;",
+    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
     {
       replacements: {
         idLaboratorio: idLaboratorio
@@ -31,9 +31,9 @@ divergenteController.getEnsayosDivergente = async (req, res) => {
     newEnsayo.Usuario = ensayo.idUsuario
     newEnsayo.Fecha = ensayo.Fecha
     newEnsayo.Hora = ensayo.Hora
-    newEnsayo.distanciaLente1 = ensayo.datosEntrada.distanciaLente1
-    newEnsayo.distanciaLenteLente = ensayo.datosEntrada.distanciaLenteLente
-    newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
+    newEnsayo.distanciaLente = ensayo.datosEntrada.distanciaLente             // Distancia Foco - 1er Lente
+    newEnsayo.distanciaLenteLente = ensayo.datosEntrada.distanciaLenteLente   // Distancia 1er Lente - 2do Lente
+    newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla       // Distancia 2do Lente - Pantalla
     dataParsed.push(newEnsayo)
   })
   
@@ -47,8 +47,10 @@ divergenteController.getEnsayosDivergente = async (req, res) => {
  * -----------------------------------------------------
  */
 divergenteController.postLabDivergente = (req, res) => {
+  console.log(req.body);
   const { 
-    distanciaLente1,
+    idUsuario,
+    distanciaLente,
     distanciaLenteLente,
     distanciaPantalla 
   } = req.body;
@@ -62,19 +64,19 @@ divergenteController.postLabDivergente = (req, res) => {
   } else {
 
     const datosEntrada = {
-      distanciaLente1: distanciaLente1,
+      distanciaLente: distanciaLente,
       distanciaLenteLente: distanciaLenteLente,
       distanciaPantalla: distanciaPantalla,
     };
 
     const datosSalida = {
       distanciaLenteLente: distanciaLenteLente,
-      distanciaDivergentePantalla: distanciaPantalla-distanciaLenteLente-distanciaLente1,//le dudo pero en teoria deberia ser que la suma de distnacia de lente mas distancia foco lente sea inferior a distancia pantalla
+      distanciaDivergentePantalla: distanciaPantalla-distanciaLenteLente-distanciaLente,//le dudo pero en teoria deberia ser que la suma de distnacia de lente mas distancia foco lente sea inferior a distancia pantalla
     };
     
     try {
       sequelize.query(
-        "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,Laboratorios_idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
+        "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
         {
           replacements: {
             idUsuario: idUsuario,
@@ -87,7 +89,7 @@ divergenteController.postLabDivergente = (req, res) => {
       );
       res.status(200).json("Parámetros correctos");
     } catch (error) {
-      console.error("-> ERROR postLabWifi:", error);
+      console.error("-> ERROR postLabDivergente:", error);
     }
   }
 };

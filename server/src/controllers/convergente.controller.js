@@ -14,7 +14,7 @@ convergenteController.getEnsayosConvergente = async (req, res) => {
   console.log(req.params);
 
   const response = await sequelize.query(
-    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE Laboratorios_idLaboratorio = '1';",
+    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = '1';",
     {
       replacements: {
         idLaboratorio: idLaboratorio
@@ -67,7 +67,7 @@ convergenteController.postLabConvergente = (req, res) => {
     };
     try {
       sequelize.query(
-        "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,Laboratorios_idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
+        "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
         {
           replacements: {
             idUsuario: idUsuario,

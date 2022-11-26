@@ -81,7 +81,7 @@ fisicaController.getEnsayosUsuario = async (req, res) => {
       const newEnsayo = {}
       newEnsayo.Fecha = ensayo.Fecha
       newEnsayo.Hora = ensayo.Hora
-      newEnsayo.distanciaLente1 = ensayo.datosEntrada.distanciaLente1
+      newEnsayo.distanciaLente = ensayo.datosEntrada.distanciaLente
       newEnsayo.distanciaLenteLente = ensayo.datosEntrada.distanciaLenteLente
       newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
       dataParsed.push(newEnsayo)
