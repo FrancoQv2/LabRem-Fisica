@@ -10,7 +10,7 @@ const divergenteController = {};
  * Function - postEnsayoDivergente
  * -----------------------------------------------------
  */
-divergenteController.postEnsayoDivergente = (req, res) => {
+divergenteController.postLabDivergente = (req, res) => {
   const { 
     idUsuario,
     distanciaLente,
@@ -51,7 +51,7 @@ divergenteController.postEnsayoDivergente = (req, res) => {
       );
       res.status(200).json("Parámetros correctos");
     } catch (error) {
-      console.error("-> ERROR postEnsayoDivergente:", error);
+      console.error("-> ERROR postLabWifi:", error);
     }
   }
 };
