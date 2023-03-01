@@ -1,54 +1,19 @@
 import { sequelize } from "../index.js";
 import { QueryTypes } from "sequelize";
 
-const idLaboratorio = 1;
+const idLaboratorio = 2;
 
 const divergenteController = {};
 
 /**
  * -----------------------------------------------------
- * Function - getEnsayosDivergente
+ * Function - postEnsayoDivergente
  * -----------------------------------------------------
  */
-divergenteController.getEnsayosDivergente = async (req, res) => {
-  console.log(req.params);
-
-  const response = await sequelize.query(
-    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE Laboratorios_idLaboratorio = 3;",
-    {
-      replacements: {
-        idLaboratorio: idLaboratorio
-      },
-      type: QueryTypes.SELECT,
-    }
-  );
-
-  console.log(response);
-  
-  let dataParsed = [];
-  response.map((ensayo)=>{
-    const newEnsayo = {}
-    newEnsayo.Usuario = ensayo.idUsuario
-    newEnsayo.Fecha = ensayo.Fecha
-    newEnsayo.Hora = ensayo.Hora
-    newEnsayo.distanciaLente1 = ensayo.datosEntrada.distanciaLente1
-    newEnsayo.distanciaLenteLente = ensayo.datosEntrada.distanciaLenteLente
-    newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
-    dataParsed.push(newEnsayo)
-  })
-  
-  console.log(dataParsed);
-  await res.send(dataParsed);
-};
-
-/**
- * -----------------------------------------------------
- * Function - postLabDivergente
- * -----------------------------------------------------
- */
-divergenteController.postLabDivergente = (req, res) => {
+divergenteController.postEnsayoDivergente = (req, res) => {
   const { 
-    distanciaLente1,
+    idUsuario,
+    distanciaLente,
     distanciaLenteLente,
     distanciaPantalla 
   } = req.body;
@@ -62,32 +27,31 @@ divergenteController.postLabDivergente = (req, res) => {
   } else {
 
     const datosEntrada = {
-      distanciaLente1: distanciaLente1,
+      distanciaLente: distanciaLente,
       distanciaLenteLente: distanciaLenteLente,
       distanciaPantalla: distanciaPantalla,
     };
 
     const datosSalida = {
       distanciaLenteLente: distanciaLenteLente,
-      distanciaDivergentePantalla: distanciaPantalla-distanciaLenteLente-distanciaLente1,//le dudo pero en teoria deberia ser que la suma de distnacia de lente mas distancia foco lente sea inferior a distancia pantalla
+      distanciaDivergentePantalla: distanciaPantalla-distanciaLenteLente-distanciaLente,//le dudo pero en teoria deberia ser que la suma de distnacia de lente mas distancia foco lente sea inferior a distancia pantalla
     };
     
     try {
       sequelize.query(
-        "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,Laboratorios_idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
+        "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
         {
           replacements: {
             idUsuario: idUsuario,
             datosEntrada: JSON.stringify(datosEntrada),
             datosSalida: JSON.stringify(datosSalida),
             idLaboratorio: idLaboratorio,
-          },
-          type: QueryTypes.INSERT,
+          }
         }
       );
       res.status(200).json("Parámetros correctos");
     } catch (error) {
-      console.error("-> ERROR postLabWifi:", error);
+      console.error("-> ERROR postEnsayoDivergente:", error);
     }
   }
 };

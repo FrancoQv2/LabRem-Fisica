@@ -3,9 +3,9 @@ import { fisicaController } from "../controllers/fisica.controller.js";
 import { convergenteController } from "../controllers/convergente.controller.js";
 import { divergenteController } from "../controllers/divergente.controller.js";
 
-const { getLaboratorios, getLaboratorioById, getEnsayosUsuario } = fisicaController;
-const { postLabConvergente, getEnsayosConvergente } = convergenteController;
-const { postLabDivergente, getEnsayosDivergente } = divergenteController;
+const { getLaboratorios, getLaboratorioById, getEnsayosUsuario, getDeleteEnsayo, getDeleteLaboratorio, getEnsayos, postModLab } = fisicaController;
+const { postEnsayoConvergente} = convergenteController;
+const { postEnsayoDivergente} = divergenteController;
 
 const fisicaRouter = express.Router();
 
@@ -16,9 +16,11 @@ const fisicaRouter = express.Router();
  */
 fisicaRouter.route("/").get(getLaboratorios);
 
-fisicaRouter.route("/divergente").get(getEnsayosDivergente).post(postLabDivergente);
+fisicaRouter.route("/divergente").post(postEnsayoDivergente);
 
-fisicaRouter.route("/convergente").get(getEnsayosConvergente).post(postLabConvergente);
+fisicaRouter.route("/convergente").post(postEnsayoConvergente);
+
+fisicaRouter.route("/modificarLab").post(postModLab); //para el grupo de gestion
 
 /**
  * -----------------------------------------------------
@@ -27,9 +29,11 @@ fisicaRouter.route("/convergente").get(getEnsayosConvergente).post(postLabConver
  */
 fisicaRouter.route("/:idLaboratorio").get(getLaboratorioById);
 
-fisicaRouter.route("/divergente/:idUsuario").get(getEnsayosUsuario);
+fisicaRouter.route("/delete/ensayo/:idEnsayo").get(getDeleteEnsayo); //para el grupo de gestion
 
-fisicaRouter.route("/convergente/:idUsuario").get(getEnsayosUsuario);
+fisicaRouter.route("/delete/laboratorio/:idLaboratorio").get(getDeleteLaboratorio); //para el grupo de gestion
+
+fisicaRouter.route("/ensayos/:idLaboratorio").get(getEnsayos); //para el grupo de gestion
 
 fisicaRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
 

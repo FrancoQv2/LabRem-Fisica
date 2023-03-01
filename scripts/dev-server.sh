@@ -12,7 +12,7 @@ docker rmi $IMAGE_NAME
 
 docker build -f server/Dockerfile.dev -t $IMAGE_NAME server
 
-docker run -ti --name $CONTAINER_NAME -v $(pwd)/server:/usr/src/server -p 3030:3000 --network $NETWORK_NAME $IMAGE_NAME
+docker run -ti --name $CONTAINER_NAME -v $(pwd)/server:/usr/src/server -p 3032:3000 --network $NETWORK_NAME $IMAGE_NAME
 
 # docker build -f server/Dockerfile.dev -t dev-server:latest server
 # docker run -ti --name dev-teleco -v $(pwd)/server:/usr/src/server -p 3030:3000 --network labrem-net dev-server:latest
