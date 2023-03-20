@@ -66,6 +66,7 @@ fisicaController.getEnsayosUsuario = async (req, res) => {
       newEnsayo.Hora = ensayo.Hora
       newEnsayo.distanciaLente = ensayo.datosEntrada.distanciaLente
       newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
+      newEnsayo.diafragma = ensayo.datosEntrada.diafragma
       dataParsed.push(newEnsayo)
     })
   } else if (idLaboratorio == 2) {
@@ -135,12 +136,38 @@ fisicaController.getEnsayos = async (req, res) => {
     "CALL sp_dameEnsayos(:idLaboratorio);",
     {
       replacements: {
-        idLaboratorio: idLaboratorio
+        idLaboratorio: idLaboratorio,
       } 
     }
   );
   
-  await res.send(response);
+  let dataParsed = [];
+  
+  if (idLaboratorio == 1) {
+    response.map((ensayo)=>{
+      const newEnsayo = {}
+      newEnsayo.Fecha = ensayo.Fecha
+      newEnsayo.Hora = ensayo.Hora
+      newEnsayo.distanciaLente = ensayo.datosEntrada.distanciaLente
+      newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
+      dataParsed.push(newEnsayo)
+    })
+  } else if (idLaboratorio == 2) {
+    response.map((ensayo)=>{
+      const newEnsayo = {}
+      newEnsayo.Fecha = ensayo.Fecha
+      newEnsayo.Hora = ensayo.Hora
+      newEnsayo.distanciaLente = ensayo.datosEntrada.distanciaLente
+      newEnsayo.distanciaLenteLente = ensayo.datosEntrada.distanciaLenteLente
+      newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
+      dataParsed.push(newEnsayo)
+    })
+  }
+  console.log("--------------------------------");
+  console.log(response);
+  console.log("--------------------------------");
+  
+  await res.send(JSON.stringify(dataParsed));
 };
 
 /**

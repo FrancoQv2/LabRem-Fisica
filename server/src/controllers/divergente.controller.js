@@ -1,5 +1,5 @@
-import { sequelize } from "../index.js";
-import { QueryTypes } from "sequelize";
+import { sequelize, delay } from "../index.js";
+import axios from "axios";
 
 const idLaboratorio = 2;
 
@@ -10,12 +10,13 @@ const divergenteController = {};
  * Function - postEnsayoDivergente
  * -----------------------------------------------------
  */
-divergenteController.postEnsayoDivergente = (req, res) => {
+divergenteController.postEnsayoDivergente = async (req, res) => {
   const { 
     idUsuario,
     distanciaLente,
     distanciaLenteLente,
-    distanciaPantalla 
+    distanciaPantalla,
+    diafragma 
   } = req.body;
 
   if (distanciaLente < 0|| distanciaLente > 700) {
@@ -24,32 +25,80 @@ divergenteController.postEnsayoDivergente = (req, res) => {
     res.status(400).json("la distancia entre el lente y lente es menor a 0 o mayor a 700");
   } else if (distanciaPantalla < 0|| distanciaPantalla > 900) {
     res.status(400).json("la distancia entre el lente y la pantalla es menor a 0 o mayor a 900");
+  } else if ( diafragma != "sin diafragma" && diafragma != "diafragma central" && diafragma != "diafragma periferico" && diafragma != "filtro rojo") {
+    res.status(400).json("el diafragma no es valido");
   } else {
 
     const datosEntrada = {
       distanciaLente: distanciaLente,
       distanciaLenteLente: distanciaLenteLente,
       distanciaPantalla: distanciaPantalla,
+      diafragma: diafragma,
     };
 
     const datosSalida = {
+      distanciaLente: distanciaLente,
       distanciaLenteLente: distanciaLenteLente,
-      distanciaDivergentePantalla: distanciaPantalla-distanciaLenteLente-distanciaLente,//le dudo pero en teoria deberia ser que la suma de distnacia de lente mas distancia foco lente sea inferior a distancia pantalla
+      distanciaPantalla: distanciaPantalla,
+      diafragma: diafragma,
     };
     
+    let Diafragma = 0;
+    switch (diafragma) {
+      case "diafragma central":
+        Diafragma = 1;
+        break;
+      case "diafragma periferico":
+        Diafragma = 2;
+        break;
+      case "filtro rojo":
+        Diafragma = 3;
+        break;
+      default:
+        break;
+    }
+     const url='http://192.168.100.75:3031/api/control/arduino';//cambiar por ip arduino
+     const body={
+       "Estado" : [3,false,true],
+       "Analogico" : [Diafragma,distanciaLente,distanciaPantalla]
+     };
+     let respuestaGet;
+     let Msj='';
     try {
-      sequelize.query(
-        "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
-        {
-          replacements: {
-            idUsuario: idUsuario,
-            datosEntrada: JSON.stringify(datosEntrada),
-            datosSalida: JSON.stringify(datosSalida),
-            idLaboratorio: idLaboratorio,
-          }
-        }
-      );
-      res.status(200).json("Parámetros correctos");
+      const respuestaPost = axios.post(`${url}/1`,body);
+      let i=0;
+      do {
+        respuestaGet = await axios.get(`${url}/${i}`);
+        await delay(3000);
+        i = i+1;
+      } while (respuestaGet.data.Estado[2]);
+      console.log(respuestaGet.data.Error);
+      switch (respuestaGet.data.Error) {
+        case 0:
+          sequelize.query(
+            "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
+            {
+              replacements: {
+                idUsuario: idUsuario,
+                datosEntrada: JSON.stringify(datosEntrada),
+                datosSalida: JSON.stringify(datosSalida),
+                idLaboratorio: idLaboratorio,
+              }
+            }
+          );
+          Msj="laboratorio ok y datos guardados en base de datos";
+          break;
+        case 1:
+          Msj="Error en el angulo limite de azimut";
+          break;
+        case 2:
+          Msj="Error en el angulo limite de elevacion";
+          break;
+        default:
+          Msj="Error de laboratorio incorrecto";
+          break;
+      }
+      res.status(200).json(Msj);
     } catch (error) {
       console.error("-> ERROR postEnsayoDivergente:", error);
     }
