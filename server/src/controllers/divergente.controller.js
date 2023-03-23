@@ -27,22 +27,7 @@ divergenteController.postEnsayoDivergente = async (req, res) => {
     res.status(400).json("la distancia entre el lente y la pantalla es menor a 0 o mayor a 900");
   } else if ( diafragma != "sin diafragma" && diafragma != "diafragma central" && diafragma != "diafragma periferico" && diafragma != "filtro rojo") {
     res.status(400).json("el diafragma no es valido");
-  } else {
-
-    const datosEntrada = {
-      distanciaLente: distanciaLente,
-      distanciaLenteLente: distanciaLenteLente,
-      distanciaPantalla: distanciaPantalla,
-      diafragma: diafragma,
-    };
-
-    const datosSalida = {
-      distanciaLente: distanciaLente,
-      distanciaLenteLente: distanciaLenteLente,
-      distanciaPantalla: distanciaPantalla,
-      diafragma: diafragma,
-    };
-    
+  } else { 
     let Diafragma = 0;
     switch (diafragma) {
       case "diafragma central":
@@ -72,21 +57,10 @@ divergenteController.postEnsayoDivergente = async (req, res) => {
         await delay(3000);
         i = i+1;
       } while (respuestaGet.data.Estado[2]);
-      console.log(respuestaGet.data.Error);
       switch (respuestaGet.data.Error) {
         case 0:
-          sequelize.query(
-            "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
-            {
-              replacements: {
-                idUsuario: idUsuario,
-                datosEntrada: JSON.stringify(datosEntrada),
-                datosSalida: JSON.stringify(datosSalida),
-                idLaboratorio: idLaboratorio,
-              }
-            }
-          );
-          Msj="laboratorio ok y datos guardados en base de datos";
+          
+          Msj="laboratorio ok";
           break;
         case 1:
           Msj="Error en el angulo limite de azimut";
@@ -99,6 +73,58 @@ divergenteController.postEnsayoDivergente = async (req, res) => {
           break;
       }
       res.status(200).json(Msj);
+    } catch (error) {
+      console.error("-> ERROR postEnsayoDivergente:", error);
+    }
+  }
+};
+
+divergenteController.postEnsayoDivergenteSave = async (req, res) => {
+  const { 
+    idUsuario,
+    distanciaLente,
+    distanciaLenteLente,
+    distanciaPantalla,
+    diafragma 
+  } = req.body;
+
+  if (distanciaLente < 0|| distanciaLente > 700) {
+    res.status(400).json("la distancia entre el lente y el foco es menor a 0 o mayor a 700");
+  } else if (distanciaLenteLente < 0|| distanciaLenteLente > 700) {
+    res.status(400).json("la distancia entre el lente y lente es menor a 0 o mayor a 700");
+  } else if (distanciaPantalla < 0|| distanciaPantalla > 900) {
+    res.status(400).json("la distancia entre el lente y la pantalla es menor a 0 o mayor a 900");
+  } else if ( diafragma != "sin diafragma" && diafragma != "diafragma central" && diafragma != "diafragma periferico" && diafragma != "filtro rojo") {
+    res.status(400).json("el diafragma no es valido");
+  } else {
+
+    const datosEntrada = {
+      distanciaLente: distanciaLente,
+      distanciaLenteLente: distanciaLenteLente,
+      distanciaPantalla: distanciaPantalla,
+      diafragma: diafragma,
+    };
+
+    const datosSalida = {
+      distanciaLente: distanciaLente,
+      distanciaLenteLente: distanciaLenteLente,
+      distanciaPantalla: distanciaPantalla,
+      diafragma: diafragma,
+    };
+    
+    try {
+          sequelize.query(
+            "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
+            {
+              replacements: {
+                idUsuario: idUsuario,
+                datosEntrada: JSON.stringify(datosEntrada),
+                datosSalida: JSON.stringify(datosSalida),
+                idLaboratorio: idLaboratorio,
+              }
+            }
+          );
+      res.status(200).json("guardado en base de datos");
     } catch (error) {
       console.error("-> ERROR postEnsayoDivergente:", error);
     }

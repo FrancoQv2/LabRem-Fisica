@@ -4,8 +4,8 @@ import { convergenteController } from "../controllers/convergente.controller.js"
 import { divergenteController } from "../controllers/divergente.controller.js";
 
 const { getLaboratorios, getLaboratorioById, getEnsayosUsuario, getDeleteEnsayo, getDeleteLaboratorio, getEnsayos, postModLab } = fisicaController;
-const { postEnsayoConvergente} = convergenteController;
-const { postEnsayoDivergente} = divergenteController;
+const { postEnsayoConvergente, postEnsayoConvergenteSave} = convergenteController;
+const { postEnsayoDivergente, postEnsayoDivergenteSave} = divergenteController;
 
 const fisicaRouter = express.Router();
 
@@ -18,7 +18,11 @@ fisicaRouter.route("/").get(getLaboratorios);
 
 fisicaRouter.route("/divergente").post(postEnsayoDivergente);
 
+fisicaRouter.route("/divergentesave").post(postEnsayoDivergenteSave);
+
 fisicaRouter.route("/convergente").post(postEnsayoConvergente);
+
+fisicaRouter.route("/convergentesave").post(postEnsayoConvergenteSave);
 
 fisicaRouter.route("/modificarLab").post(postModLab); //para el grupo de gestion
 
