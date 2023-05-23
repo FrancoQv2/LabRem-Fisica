@@ -25,7 +25,6 @@ CREATE TABLE IF NOT EXISTS Laboratorios (
   UNIQUE INDEX  UI_Laboratorios_nombre (nombre) VISIBLE
 ) ENGINE = InnoDB;
 
-
 -- -----------------------------------------------------
 -- Tabla - Ensayos
 -- -----------------------------------------------------
