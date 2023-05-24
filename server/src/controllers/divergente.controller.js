@@ -1,134 +1,105 @@
-import { sequelize, delay } from "../index.js";
-import axios from "axios";
+import { db } from "../index.js"
+import { delay } from "../lib/delay.js"
+import axios from "axios"
 
-const idLaboratorio = 2;
+const idLaboratorio = 2
 
-const divergenteController = {};
+const queries = {
+    getEnsayosDivergentes: "CALL sp_dameEnsayosDivergentes();",
+    postEnsayoDivergentes: "CALL sp_crearEnsayo(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+}
 
-/**
- * -----------------------------------------------------
- * Function - postEnsayoDivergente
- * -----------------------------------------------------
- */
+const divergenteController = {}
+
+// -----------------------------------
+// Métodos GET
+// -----------------------------------
+
+divergenteController.getEnsayosDivergentes = async (req, res) => {
+    console.log("--------------------")
+    console.log(`--> getEnsayosDivergentes - ${JSON.stringify(req.params)}`)
+
+    const data = await db.query(
+        queries.getEnsayosDivergentes
+    )
+
+    let dataParsed = []
+    data.map((ensayo) => {
+        const newEnsayo = {}
+        newEnsayo.Usuario   = ensayo.idUsuario
+        newEnsayo.Fecha     = ensayo.Fecha
+        newEnsayo.Hora      = ensayo.Hora
+        newEnsayo.distanciaLente        = ensayo.datosEntrada.distanciaLente
+        newEnsayo.distanciaLenteLente   = ensayo.datosEntrada.distanciaLenteLente
+        newEnsayo.distanciaPantalla     = ensayo.datosEntrada.distanciaPantalla
+        dataParsed.push(newEnsayo)
+    })
+
+    await res.status(200).send(dataParsed)
+}
+
+// -----------------------------------
+// Métodos POST
+// -----------------------------------
+
 divergenteController.postEnsayoDivergente = async (req, res) => {
-  const { 
-    idUsuario,
-    distanciaLente,
-    distanciaLenteLente,
-    distanciaPantalla,
-    diafragma 
-  } = req.body;
+    console.log(req.body)
+    console.log(`---\n--> postEnsayoDivergente - ${JSON.stringify(req.body)}\n---`)
 
-  if (distanciaLente < 0|| distanciaLente > 700) {
-    res.status(400).json("la distancia entre el lente y el foco es menor a 0 o mayor a 700");
-  } else if (distanciaLenteLente < 0|| distanciaLenteLente > 700) {
-    res.status(400).json("la distancia entre el lente y lente es menor a 0 o mayor a 700");
-  } else if (distanciaPantalla < 0|| distanciaPantalla > 900) {
-    res.status(400).json("la distancia entre el lente y la pantalla es menor a 0 o mayor a 900");
-  } else if ( diafragma != "sin diafragma" && diafragma != "diafragma central" && diafragma != "diafragma periferico" && diafragma != "filtro rojo") {
-    res.status(400).json("el diafragma no es valido");
-  } else { 
-    let Diafragma = 0;
-    switch (diafragma) {
-      case "diafragma central":
-        Diafragma = 1;
-        break;
-      case "diafragma periferico":
-        Diafragma = 2;
-        break;
-      case "filtro rojo":
-        Diafragma = 3;
-        break;
-      default:
-        break;
+    const {
+        idUsuario,
+        distanciaLente,
+        distanciaLenteLente,
+        distanciaPantalla,
+        diafragma
+    } = req.body
+
+    if (distanciaLente < 0 || distanciaLente > 700) {
+        res.status(400)
+            .send("La distancia entre el lente y el foco es menor a 0 o mayor a 700")
+    } else if (distanciaLenteLente < 0 || distanciaLenteLente > 700) {
+        res.status(400)
+            .send("La distancia entre el lente y lente es menor a 0 o mayor a 700")
+    } else if (distanciaPantalla < 0 || distanciaPantalla > 900) {
+        res.status(400)
+            .send("La distancia entre el lente y la pantalla es menor a 0 o mayor a 900")
+    } else if (
+        diafragma != "sin diafragma" && 
+        diafragma != "diafragma central" && 
+        diafragma != "diafragma periferico" && 
+        diafragma != "filtro rojo"
+    ) {
+        res.status(400).send("Diafragma inválido")
+    } else {
+
+        const datosEntrada = {
+            distanciaLente: distanciaLente,
+            distanciaLenteLente: distanciaLenteLente,
+            distanciaPantalla: distanciaPantalla,
+            diafragma: diafragma
+        }
+
+        const datosSalida = { }
+
+        try {
+            db.query(
+                queries.postEnsayoDivergentes,
+                {
+                    replacements: {
+                        idUsuario: idUsuario,
+                        datosEntrada: JSON.stringify(datosEntrada),
+                        datosSalida: JSON.stringify(datosSalida),
+                        idLaboratorio: idLaboratorio
+                    }
+                }
+            )
+
+            res.status(200).json({ msg: "Parámetros correctos. Guardado en DB" })
+        } catch (error) {
+            console.error("-> ERROR postEnsayoDivergentes:", error)
+            res.status(500).json({ msg: "Error en postEnsayoDivergentes!" })
+        }
     }
-     const url='http://192.168.100.75:3031/api/control/arduino';//cambiar por ip arduino
-     const body={
-       "Estado" : [3,false,true],
-       "Analogico" : [Diafragma,distanciaLente,distanciaPantalla]
-     };
-     let respuestaGet;
-     let Msj='';
-    try {
-      const respuestaPost = axios.post(`${url}/1`,body);
-      let i=0;
-      do {
-        respuestaGet = await axios.get(`${url}/${i}`);
-        await delay(3000);
-        i = i+1;
-      } while (respuestaGet.data.Estado[2]);
-      switch (respuestaGet.data.Error) {
-        case 0:
-          
-          Msj="laboratorio ok";
-          break;
-        case 1:
-          Msj="Error en el angulo limite de azimut";
-          break;
-        case 2:
-          Msj="Error en el angulo limite de elevacion";
-          break;
-        default:
-          Msj="Error de laboratorio incorrecto";
-          break;
-      }
-      res.status(200).json(Msj);
-    } catch (error) {
-      console.error("-> ERROR postEnsayoDivergente:", error);
-    }
-  }
-};
+}
 
-divergenteController.postEnsayoDivergenteSave = async (req, res) => {
-  const { 
-    idUsuario,
-    distanciaLente,
-    distanciaLenteLente,
-    distanciaPantalla,
-    diafragma 
-  } = req.body;
-
-  if (distanciaLente < 0|| distanciaLente > 700) {
-    res.status(400).json("la distancia entre el lente y el foco es menor a 0 o mayor a 700");
-  } else if (distanciaLenteLente < 0|| distanciaLenteLente > 700) {
-    res.status(400).json("la distancia entre el lente y lente es menor a 0 o mayor a 700");
-  } else if (distanciaPantalla < 0|| distanciaPantalla > 900) {
-    res.status(400).json("la distancia entre el lente y la pantalla es menor a 0 o mayor a 900");
-  } else if ( diafragma != "sin diafragma" && diafragma != "diafragma central" && diafragma != "diafragma periferico" && diafragma != "filtro rojo") {
-    res.status(400).json("el diafragma no es valido");
-  } else {
-
-    const datosEntrada = {
-      distanciaLente: distanciaLente,
-      distanciaLenteLente: distanciaLenteLente,
-      distanciaPantalla: distanciaPantalla,
-      diafragma: diafragma,
-    };
-
-    const datosSalida = {
-      distanciaLente: distanciaLente,
-      distanciaLenteLente: distanciaLenteLente,
-      distanciaPantalla: distanciaPantalla,
-      diafragma: diafragma,
-    };
-    
-    try {
-          sequelize.query(
-            "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
-            {
-              replacements: {
-                idUsuario: idUsuario,
-                datosEntrada: JSON.stringify(datosEntrada),
-                datosSalida: JSON.stringify(datosSalida),
-                idLaboratorio: idLaboratorio,
-              }
-            }
-          );
-      res.status(200).json("guardado en base de datos");
-    } catch (error) {
-      console.error("-> ERROR postEnsayoDivergente:", error);
-    }
-  }
-};
-
-export { divergenteController };
+export { divergenteController }

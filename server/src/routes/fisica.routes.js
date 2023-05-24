@@ -1,45 +1,53 @@
-import express from "express";
-import { fisicaController } from "../controllers/fisica.controller.js";
-import { convergenteController } from "../controllers/convergente.controller.js";
-import { divergenteController } from "../controllers/divergente.controller.js";
+import express from "express"
+import { fisicaController } from "../controllers/fisica.controller.js"
+import { convergenteController } from "../controllers/convergente.controller.js"
+import { divergenteController } from "../controllers/divergente.controller.js"
 
-const { getLaboratorios, getLaboratorioById, getEnsayosUsuario, getDeleteEnsayo, getDeleteLaboratorio, getEnsayos, postModLab } = fisicaController;
-const { postEnsayoConvergente, postEnsayoConvergenteSave} = convergenteController;
-const { postEnsayoDivergente, postEnsayoDivergenteSave} = divergenteController;
+const { getLaboratorios, getLaboratorio, getEnsayosUsuario, deleteEnsayo, postLaboratorio, deleteLaboratorio, getEnsayos, updateLaboratorio } = fisicaController
+const { getEnsayosConvergentes, postEnsayoConvergente} = convergenteController
+const { getEnsayosDivergentes, postEnsayoDivergente} = divergenteController
 
-const fisicaRouter = express.Router();
+const fisicaRouter = express.Router()
 
-/**
- * -----------------------------------------------------
- * Rutas - Laboratorios de Fisica
- * -----------------------------------------------------
- */
-fisicaRouter.route("/").get(getLaboratorios);
+// -----------------------------------------------------
+// Endpoints - Laboratorios de Física Experimental Básica
+// -----------------------------------------------------
 
-fisicaRouter.route("/divergente").post(postEnsayoDivergente);
+fisicaRouter.route("/")
+    .get(getLaboratorios)
+    .post(postLaboratorio)
+    
+fisicaRouter.route("/convergente")
+    .get(getEnsayosConvergentes)
+    .post(postEnsayoConvergente)
 
-fisicaRouter.route("/divergentesave").post(postEnsayoDivergenteSave);
+fisicaRouter.route("/divergente")
+    .get(getEnsayosDivergentes)
+    .post(postEnsayoDivergente)
 
-fisicaRouter.route("/convergente").post(postEnsayoConvergente);
+// -----------------------------------------------------
+// Endpoints para Gestión
+// -----------------------------------------------------
 
-fisicaRouter.route("/convergentesave").post(postEnsayoConvergenteSave);
+fisicaRouter.route("/laboratorios/:idLaboratorio")
+    .get(getLaboratorio)
+    .post(updateLaboratorio)
+    .delete(deleteLaboratorio)
 
-fisicaRouter.route("/modificarLab").post(postModLab); //para el grupo de gestion
+fisicaRouter.route("/ensayos/:idLaboratorio")
+    .get(getEnsayos)
 
-/**
- * -----------------------------------------------------
- * Rutas con pasaje de parametro en la URL
- * -----------------------------------------------------
- */
-fisicaRouter.route("/:idLaboratorio").get(getLaboratorioById);
+fisicaRouter.route("/ensayos/:idEnsayo")
+    .delete(deleteEnsayo)
 
-fisicaRouter.route("/delete/ensayo/:idEnsayo").get(getDeleteEnsayo); //para el grupo de gestion
+// -----------------------------------------------------
+// Endpoints con pasaje de parametro en la URL
+// -----------------------------------------------------
 
-fisicaRouter.route("/delete/laboratorio/:idLaboratorio").get(getDeleteLaboratorio); //para el grupo de gestion
+fisicaRouter.route("/:idLaboratorio")
+    .get(getLaboratorio)
 
-fisicaRouter.route("/ensayos/:idLaboratorio").get(getEnsayos); //para el grupo de gestion
+fisicaRouter.route("/:idLaboratorio/:idUsuario")
+    .get(getEnsayosUsuario)
 
-fisicaRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
-
-
-export default fisicaRouter;
+export default fisicaRouter
