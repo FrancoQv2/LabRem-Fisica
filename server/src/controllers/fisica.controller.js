@@ -126,9 +126,9 @@ fisicaController.getEnsayosUsuario = async (req, res) => {
                     newEnsayo.index     = index + 1
                     newEnsayo.Fecha     = ensayo.Fecha
                     newEnsayo.Hora      = ensayo.Hora
-                    newEnsayo.distanciaLente    = ensayo.datosEntrada.distanciaLente
-                    newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
-                    newEnsayo.diafragma         = ensayo.datosEntrada.diafragma
+                    newEnsayo.distanciaFL = ensayo.datosEntrada.distanciaFL
+                    newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
+                    newEnsayo.diafragma   = ensayo.datosEntrada.diafragma
                     dataParsed.push(newEnsayo)
                 })
             } else if (idLaboratorio == 2) {
@@ -137,9 +137,9 @@ fisicaController.getEnsayosUsuario = async (req, res) => {
                     newEnsayo.index = index + 1
                     newEnsayo.Fecha = ensayo.Fecha
                     newEnsayo.Hora  = ensayo.Hora
-                    newEnsayo.distanciaLente      = ensayo.datosEntrada.distanciaLente
-                    newEnsayo.distanciaLenteLente = ensayo.datosEntrada.distanciaLenteLente
-                    newEnsayo.distanciaPantalla   = ensayo.datosEntrada.distanciaPantalla
+                    newEnsayo.distanciaFL = ensayo.datosEntrada.distanciaFL
+                    newEnsayo.distanciaLL = ensayo.datosEntrada.distanciaLL
+                    newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
                     dataParsed.push(newEnsayo)
                 })
             }

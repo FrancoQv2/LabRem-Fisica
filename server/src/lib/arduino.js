@@ -4,11 +4,12 @@ import { delay } from "./delay.js"
 // const URL_ARDUINO = 'http://192.168.100.75:3031/api/control/arduino' // Cambiar por ip arduino
 const URL_ARDUINO = "http://172.23.12.125:5033" // IP de wsl vista desde dev-teleco
 
-export async function postArduino(azimut, elevacion) {
+export async function postArduino(diafragma, distanciaLente, distanciaPantalla) {
     let respuestaPost
 
     const body = {
-        "Estado": [3, true, true],          // [ Laboratorio (Fisica), Sub Laboratorio (Convergente), Inicio del experimento ]
+        // [ Laboratorio (Fisica), Sub Laboratorio (Convergente), Inicio del experimento ]
+        "Estado": [3, true, true],
         "Analogico": [diafragma, distanciaLente, distanciaPantalla]
     }
 

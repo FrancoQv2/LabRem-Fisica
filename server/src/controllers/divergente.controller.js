@@ -29,9 +29,9 @@ divergenteController.getEnsayosDivergentes = async (req, res) => {
         newEnsayo.Usuario   = ensayo.idUsuario
         newEnsayo.Fecha     = ensayo.Fecha
         newEnsayo.Hora      = ensayo.Hora
-        newEnsayo.distanciaLente        = ensayo.datosEntrada.distanciaLente
-        newEnsayo.distanciaLenteLente   = ensayo.datosEntrada.distanciaLenteLente
-        newEnsayo.distanciaPantalla     = ensayo.datosEntrada.distanciaPantalla
+        newEnsayo.distanciaFL = ensayo.datosEntrada.distanciaFL
+        newEnsayo.distanciaLL = ensayo.datosEntrada.distanciaLL
+        newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
         dataParsed.push(newEnsayo)
     })
 
@@ -48,34 +48,34 @@ divergenteController.postEnsayoDivergente = async (req, res) => {
 
     const {
         idUsuario,
-        distanciaLente,
-        distanciaLenteLente,
-        distanciaPantalla,
+        distanciaFL,
+        distanciaLL,
+        distanciaLP,
         diafragma
     } = req.body
 
-    if (distanciaLente < 0 || distanciaLente > 700) {
+    if (distanciaFL < 0 || distanciaFL > 700) {
         res.status(400)
             .send("La distancia entre el lente y el foco es menor a 0 o mayor a 700")
-    } else if (distanciaLenteLente < 0 || distanciaLenteLente > 700) {
+    } else if (distanciaLL < 0 || distanciaLL > 700) {
         res.status(400)
             .send("La distancia entre el lente y lente es menor a 0 o mayor a 700")
-    } else if (distanciaPantalla < 0 || distanciaPantalla > 900) {
+    } else if (distanciaLP < 0 || distanciaLP > 900) {
         res.status(400)
             .send("La distancia entre el lente y la pantalla es menor a 0 o mayor a 900")
     } else if (
-        diafragma != "sin diafragma" && 
-        diafragma != "diafragma central" && 
-        diafragma != "diafragma periferico" && 
-        diafragma != "filtro rojo"
+        diafragma != "Sin diafragma" && 
+        diafragma != "Central" && 
+        diafragma != "Periférico" && 
+        diafragma != "Filtro rojo"
     ) {
         res.status(400).send("Diafragma inválido")
     } else {
 
         const datosEntrada = {
-            distanciaLente: distanciaLente,
-            distanciaLenteLente: distanciaLenteLente,
-            distanciaPantalla: distanciaPantalla,
+            distanciaFL: distanciaFL,
+            distanciaLL: distanciaLL,
+            distanciaLP: distanciaLP,
             diafragma: diafragma
         }
 

@@ -29,8 +29,8 @@ convergenteController.getEnsayosConvergentes = async (req, res) => {
         newEnsayo.Usuario       = ensayo.idUsuario
         newEnsayo.Fecha         = ensayo.Fecha
         newEnsayo.Hora          = ensayo.Hora
-        newEnsayo.distanciaLente    = ensayo.datosEntrada.distanciaLente
-        newEnsayo.distanciaPantalla = ensayo.datosEntrada.distanciaPantalla
+        newEnsayo.distanciaFL    = ensayo.datosEntrada.distanciaFL
+        newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
         newEnsayo.diafragma         = ensayo.datosEntrada.diafragma
         dataParsed.push(newEnsayo)
     })
@@ -48,29 +48,29 @@ convergenteController.postEnsayoConvergente = async (req, res) => {
 
     const {
         idUsuario,
-        distanciaLente,
-        distanciaPantalla,
+        distanciaFL,
+        distanciaLP,
         diafragma
     } = req.body
 
-    if (distanciaLente < 0 || distanciaLente > 900) {
+    if (distanciaFL < 0 || distanciaFL > 900) {
         res.status(400)
             .send("La distancia entre el lente y el foco es menor a 0 o mayor a 900")
-    } else if (distanciaPantalla < 0 || distanciaPantalla > 900) {
+    } else if (distanciaLP < 0 || distanciaLP > 900) {
         res.status(400)
             .send("La distancia entre el lente y la pantalla es menor a 0 o mayor a 900")
     } else if (
-        diafragma != "sin diafragma" && 
-        diafragma != "diafragma central" && 
-        diafragma != "diafragma periferico" && 
-        diafragma != "filtro rojo"
+        diafragma != "Sin diafragma" && 
+        diafragma != "Central" && 
+        diafragma != "Periférico" && 
+        diafragma != "Filtro rojo"
     ) {
         res.status(400)
             .send("Diafragma inválido")
     } else {
         const datosEntrada = {
-            distanciaLente: distanciaLente,
-            distanciaPantalla: distanciaPantalla,
+            distanciaFL: distanciaFL,
+            distanciaLP: distanciaLP,
             diafragma: diafragma
         }
 
