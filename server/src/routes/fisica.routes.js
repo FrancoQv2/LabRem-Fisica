@@ -2,10 +2,12 @@ import express from "express"
 import { fisicaController } from "../controllers/fisica.controller.js"
 import { convergenteController } from "../controllers/convergente.controller.js"
 import { divergenteController } from "../controllers/divergente.controller.js"
+import { validacionController } from "../controllers/validacion.controller.js"
 
 const { getLaboratorios, getLaboratorio, getEnsayosUsuario, deleteEnsayo, postLaboratorio, deleteLaboratorio, getEnsayos, updateLaboratorio } = fisicaController
 const { getEnsayosConvergentes, postEnsayoConvergente} = convergenteController
 const { getEnsayosDivergentes, postEnsayoDivergente} = divergenteController
+const {verificar} = validacionController
 
 const fisicaRouter = express.Router()
 
@@ -24,6 +26,12 @@ fisicaRouter.route("/convergente")
 fisicaRouter.route("/divergente")
     .get(getEnsayosDivergentes)
     .post(postEnsayoDivergente)
+
+// ------------------------------------------------------------
+// Endpoints - Laboratorios de Física Experimental Básica token
+// ------------------------------------------------------------
+
+fisicaRouter.route("/verificar").post(verificar);
 
 // -----------------------------------------------------
 // Endpoints para Gestión
