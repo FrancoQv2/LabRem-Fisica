@@ -79,7 +79,6 @@ convergenteController.postEnsayoConvergente = async (req, res) => {
 
         
         if (guardar) {
-            console.log(datosEntrada)
             try {
                 db.query(
                     queries.postEnsayoConvergentes,
