@@ -88,7 +88,35 @@ fisicaController.getEnsayos = async (req, res) => {
         if (!data.length) {
             await res.status(404).send("No existen ensayos para este laboratorio!")
         } else {
-            await res.status(200).send(data)
+            let dataParsed = []
+
+            if (idLaboratorio == 1) {
+                data.map((ensayo, index) => {
+                    const newEnsayo = {}
+                    newEnsayo.index     = index + 1
+                    newEnsayo.Fecha     = ensayo.Fecha
+                    newEnsayo.Hora      = ensayo.Hora
+                    newEnsayo.distanciaFL = ensayo.datosEntrada.distanciaFL
+                    newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
+                    newEnsayo.diafragma   = ensayo.datosEntrada.diafragma
+                    dataParsed.push(newEnsayo)
+                })
+            } else if (idLaboratorio == 2) {
+                data.map((ensayo, index) => {
+                    const newEnsayo = {}
+                    newEnsayo.index = index + 1
+                    newEnsayo.Fecha = ensayo.Fecha
+                    newEnsayo.Hora  = ensayo.Hora
+                    newEnsayo.distanciaFL = ensayo.datosEntrada.distanciaFL
+                    newEnsayo.distanciaLL = ensayo.datosEntrada.distanciaLL
+                    newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
+                    dataParsed.push(newEnsayo)
+                })
+            }
+
+            console.log(dataParsed)
+
+            await res.status(200).json(dataParsed)
         }
     } catch (error) {
         console.error("-> ERROR getEnsayos:", error)
