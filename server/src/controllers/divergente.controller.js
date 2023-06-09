@@ -1,9 +1,9 @@
 import { db } from "../index.js"
-import { delay } from "../lib/delay.js"
 import axios from "axios"
 
 const idLaboratorio = 2
-const url = "http://192.168.100.75:5032/fisica/divergente"
+const URL_ARDUINO = "http://192.168.100.75:5032/fisica/divergente"
+
 const queries = {
     getEnsayosDivergentes: "CALL sp_dameEnsayosDivergentes();",
     postEnsayoDivergentes: "CALL sp_crearEnsayo(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
@@ -26,9 +26,9 @@ divergenteController.getEnsayosDivergentes = async (req, res) => {
     let dataParsed = []
     data.map((ensayo) => {
         const newEnsayo = {}
-        newEnsayo.Usuario   = ensayo.idUsuario
-        newEnsayo.Fecha     = ensayo.Fecha
-        newEnsayo.Hora      = ensayo.Hora
+        newEnsayo.Usuario     = ensayo.idUsuario
+        newEnsayo.Fecha       = ensayo.Fecha
+        newEnsayo.Hora        = ensayo.Hora
         newEnsayo.distanciaFL = ensayo.datosEntrada.distanciaFL
         newEnsayo.distanciaLL = ensayo.datosEntrada.distanciaLL
         newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
@@ -55,13 +55,22 @@ divergenteController.postEnsayoDivergente = async (req, res) => {
         guardar
     } = req.body
 
-    if (distanciaFL < 0 || distanciaFL > 700) {
+    if (
+        distanciaFL < 0 || 
+        distanciaFL > 700
+    ) {
         res.status(400)
             .send("La distancia entre el lente y el foco es menor a 0 o mayor a 700")
-    } else if (distanciaLL < 0 || distanciaLL > 700) {
+    } else if (
+        distanciaLL < 0 || 
+        distanciaLL > 700
+    ) {
         res.status(400)
             .send("La distancia entre el lente y lente es menor a 0 o mayor a 700")
-    } else if (distanciaLP < 0 || distanciaLP > 900) {
+    } else if (
+        distanciaLP < 0 || 
+        distanciaLP > 900
+    ) {
         res.status(400)
             .send("La distancia entre el lente y la pantalla es menor a 0 o mayor a 900")
     } else if (
@@ -102,9 +111,9 @@ divergenteController.postEnsayoDivergente = async (req, res) => {
                 res.status(500).json({ msg: "Error en postEnsayoDivergentes!" })
             }
         } else {
-            let respuesta = await axios.get(url)
+            let respuesta = await axios.get(URL_ARDUINO)
             while (respuesta.data.Estado[2] != 0) {
-                respuesta = await axios.get(url)
+                respuesta = await axios.get(URL_ARDUINO)
                 console.log("tarea en curso")
             }
             console.log("no hay tareas en curso")
@@ -113,7 +122,7 @@ divergenteController.postEnsayoDivergente = async (req, res) => {
                 Analogico: [1,125,542,2]
             }
             const { data } = await axios.post(
-                url,
+                URL_ARDUINO,
                 datos
                 )
             res.status(200).json({ msg: "Parámetros correctos. ejecutando en arduino" })

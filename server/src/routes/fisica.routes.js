@@ -7,7 +7,7 @@ import { validacionController } from "../controllers/validacion.controller.js"
 const { getLaboratorios, getLaboratorio, getEnsayosUsuario, deleteEnsayo, postLaboratorio, deleteLaboratorio, getEnsayos, updateLaboratorio } = fisicaController
 const { getEnsayosConvergentes, postEnsayoConvergente} = convergenteController
 const { getEnsayosDivergentes, postEnsayoDivergente} = divergenteController
-const {verificar} = validacionController
+const { validarToken } = validacionController
 
 const fisicaRouter = express.Router()
 
@@ -28,10 +28,11 @@ fisicaRouter.route("/divergente")
     .post(postEnsayoDivergente)
 
 // ------------------------------------------------------------
-// Endpoints - Laboratorios de Física Experimental Básica token
+// Endpoints para validación de Token
 // ------------------------------------------------------------
 
-fisicaRouter.route("/verificar").post(verificar);
+fisicaRouter.route("/token")
+    .post(validarToken)
 
 // -----------------------------------------------------
 // Endpoints para Gestión

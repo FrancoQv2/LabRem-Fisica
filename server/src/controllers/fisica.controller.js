@@ -1,7 +1,5 @@
 import { db } from "../index.js"
 
-import axios from "axios"
-
 const fisicaController = {}
 
 const queries = {

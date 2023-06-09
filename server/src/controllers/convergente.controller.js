@@ -1,9 +1,9 @@
 import { db } from "../index.js"
-import { delay } from "../lib/delay.js"
 import axios from "axios"
 
 const idLaboratorio = 1
-const url = "http://192.168.100.75:5032/fisica/convergente"
+const URL_ARDUINO = "http://192.168.100.75:5032/fisica/convergente"
+
 const queries = {
     getEnsayosConvergentes: "CALL sp_dameEnsayosConvergentes();",
     postEnsayoConvergentes: "CALL sp_crearEnsayo(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
@@ -29,9 +29,9 @@ convergenteController.getEnsayosConvergentes = async (req, res) => {
         newEnsayo.Usuario       = ensayo.idUsuario
         newEnsayo.Fecha         = ensayo.Fecha
         newEnsayo.Hora          = ensayo.Hora
-        newEnsayo.distanciaFL    = ensayo.datosEntrada.distanciaFL
-        newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
-        newEnsayo.diafragma         = ensayo.datosEntrada.diafragma
+        newEnsayo.distanciaFL   = ensayo.datosEntrada.distanciaFL
+        newEnsayo.distanciaLP   = ensayo.datosEntrada.distanciaLP
+        newEnsayo.diafragma     = ensayo.datosEntrada.diafragma
         dataParsed.push(newEnsayo)
     })
 
@@ -54,10 +54,16 @@ convergenteController.postEnsayoConvergente = async (req, res) => {
         guardar
     } = req.body
 
-    if (distanciaFL < 0 || distanciaFL > 900) {
+    if (
+        distanciaFL < 0 || 
+        distanciaFL > 900
+    ) {
         res.status(400)
             .send("La distancia entre el lente y el foco es menor a 0 o mayor a 900")
-    } else if (distanciaLP < 0 || distanciaLP > 900) {
+    } else if (
+        distanciaLP < 0 || 
+        distanciaLP > 900
+    ) {
         res.status(400)
             .send("La distancia entre el lente y la pantalla es menor a 0 o mayor a 900")
     } else if (
@@ -98,9 +104,9 @@ convergenteController.postEnsayoConvergente = async (req, res) => {
                 res.status(500).json({ msg: "Error en postEnsayoConvergentes!" })
             }
         } else {
-            let respuesta = await axios.get(url)
+            let respuesta = await axios.get(URL_ARDUINO)
             while (respuesta.data.Estado[2] != 0) {
-                respuesta = await axios.get(url)
+                respuesta = await axios.get(URL_ARDUINO)
                 console.log("tarea en curso")
             }
             console.log("no hay tareas en curso")
@@ -109,7 +115,7 @@ convergenteController.postEnsayoConvergente = async (req, res) => {
                 Analogico: [1,125,542,2]
             }
             const { data } = await axios.post(
-                url,
+                URL_ARDUINO,
                 datos
                 )
             res.status(200).json({ msg: "Parámetros correctos. ejecutando en arduino" })
