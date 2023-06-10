@@ -10,6 +10,7 @@ import cors from "cors"
 
 import { dbConnection } from "./db/dbconfig.js"
 
+import authRouter from "./routes/auth.routes.js"
 import fisicaRouter from "./routes/fisica.routes.js"
 
 const app = expressServer()
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 
+app.use("/api/auth", authRouter)
 app.use("/api/fisica", fisicaRouter)
 
 // app.use("/public-key", "id_rsa.pub") // formato x.509

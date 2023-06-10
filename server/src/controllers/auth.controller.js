@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'        //Manejo de Tokens
 
-const validacionController = {}
+const authController = {}
 
-validacionController.validarToken = (req, res, next) => {
+authController.validarToken = (req, res, next) => {
     const tokenH = req.headers['authorization']
     const { datos } = req.body
     if (tokenH) {
@@ -36,4 +36,4 @@ validacionController.validarToken = (req, res, next) => {
     }
 }
 
-export { validacionController }
+export { authController }
