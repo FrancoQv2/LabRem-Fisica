@@ -26,12 +26,12 @@ convergenteController.getEnsayosConvergentes = async (req, res) => {
     let dataParsed = []
     data.map((ensayo) => {
         const newEnsayo = {}
-        newEnsayo.Usuario       = ensayo.idUsuario
-        newEnsayo.Fecha         = ensayo.Fecha
-        newEnsayo.Hora          = ensayo.Hora
-        newEnsayo.distanciaFL   = ensayo.datosEntrada.distanciaFL
-        newEnsayo.distanciaLP   = ensayo.datosEntrada.distanciaLP
-        newEnsayo.diafragma     = ensayo.datosEntrada.diafragma
+        newEnsayo.Usuario = ensayo.idUsuario
+        newEnsayo.Fecha = ensayo.Fecha
+        newEnsayo.Hora = ensayo.Hora
+        newEnsayo.distanciaFL = ensayo.datosEntrada.distanciaFL
+        newEnsayo.distanciaLP = ensayo.datosEntrada.distanciaLP
+        newEnsayo.diafragma = ensayo.datosEntrada.diafragma
         dataParsed.push(newEnsayo)
     })
 
@@ -50,26 +50,25 @@ convergenteController.postEnsayoConvergente = async (req, res) => {
         idUsuario,
         distanciaFL,
         distanciaLP,
-        diafragma,
-        guardar
+        diafragma
     } = req.body
 
     if (
-        distanciaFL < 0 || 
+        distanciaFL < 0 ||
         distanciaFL > 900
     ) {
         res.status(400)
             .send("La distancia entre el lente y el foco es menor a 0 o mayor a 900")
     } else if (
-        distanciaLP < 0 || 
+        distanciaLP < 0 ||
         distanciaLP > 900
     ) {
         res.status(400)
             .send("La distancia entre el lente y la pantalla es menor a 0 o mayor a 900")
     } else if (
-        diafragma != "Sin diafragma" && 
-        diafragma != "Central" && 
-        diafragma != "Periférico" && 
+        diafragma != "Sin diafragma" &&
+        diafragma != "Central" &&
+        diafragma != "Periférico" &&
         diafragma != "Filtro rojo"
     ) {
         res.status(400)
@@ -81,47 +80,26 @@ convergenteController.postEnsayoConvergente = async (req, res) => {
             diafragma: diafragma
         }
 
-        const datosSalida = { }
+        const datosSalida = {}
 
-        
-        if (guardar) {
-            try {
-                db.query(
-                    queries.postEnsayoConvergentes,
-                    {
-                        replacements: {
-                            idUsuario: idUsuario,
-                            datosEntrada: JSON.stringify(datosEntrada),
-                            datosSalida: JSON.stringify(datosSalida),
-                            idLaboratorio: idLaboratorio
-                        }
+        try {
+            db.query(
+                queries.postEnsayoConvergentes,
+                {
+                    replacements: {
+                        idUsuario: idUsuario,
+                        datosEntrada: JSON.stringify(datosEntrada),
+                        datosSalida: JSON.stringify(datosSalida),
+                        idLaboratorio: idLaboratorio
                     }
-                )
+                }
+            )
 
-                res.status(200).json({ msg: "Parámetros correctos. Guardado en DB" })
-            } catch (error) {
-                console.error("-> ERROR postEnsayoConvergentes:", error)
-                res.status(500).json({ msg: "Error en postEnsayoConvergentes!" })
-            }
-        } else {
-            let respuesta = await axios.get(URL_ARDUINO)
-            while (respuesta.data.Estado[2] != 0) {
-                respuesta = await axios.get(URL_ARDUINO)
-                console.log("tarea en curso")
-            }
-            console.log("no hay tareas en curso")
-            const datos = {
-                Estado: [0,true,false],
-                Analogico: [1,125,542,2]
-            }
-            const { data } = await axios.post(
-                URL_ARDUINO,
-                datos
-                )
-            res.status(200).json({ msg: "Parámetros correctos. ejecutando en arduino" })
+            res.status(200).json("Parámetros correctos. Guardado en DB")
+        } catch (error) {
+            console.error("-> ERROR postEnsayoConvergentes:", error)
+            res.status(500).json("Falló el ensayo Convergente!")
         }
-            
-        
     }
 }
 

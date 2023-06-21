@@ -112,7 +112,7 @@ fisicaController.getEnsayos = async (req, res) => {
                 })
             }
 
-            console.log(dataParsed)
+            // console.log(dataParsed)
 
             await res.status(200).json(dataParsed)
         }
@@ -170,7 +170,7 @@ fisicaController.getEnsayosUsuario = async (req, res) => {
                 })
             }
 
-            console.log(dataParsed)
+            // console.log(dataParsed)
 
             await res.status(200).json(dataParsed)
         }
