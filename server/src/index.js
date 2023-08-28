@@ -32,7 +32,9 @@ const PORT = 3000
 app.use(morgan("dev"))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({
+    origin: "https://labrem.facet.unt.edu.ar:8081"
+}))
 
 // app.use("/api/auth", authRouter)
 app.use("/api/fisica", fisicaRouter)
