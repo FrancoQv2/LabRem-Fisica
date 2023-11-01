@@ -1,6 +1,4 @@
 import * as dotenv from "dotenv"
-// Toma las variables configuradas por ENV dentro del docker-compose / dockerfile
-// dotenv.config({ path: './.env'})
 dotenv.config()
 
 import expressServer from "express"
@@ -15,7 +13,6 @@ import path from "path"
 
 import { dbConnection } from "./configs/db.config.js"
 
-// import authRouter from "./routes/auth.routes.js"
 import fisicaRouter from "./routes/fisica.routes.js"
 
 // Configuracion de https
@@ -28,18 +25,12 @@ const options = {
 const app = expressServer()
 const PORT = 3000
 
-//Necesitamos body-parser para formatear los post en express
 app.use(morgan("dev"))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(cors({
-    origin: "https://labrem.facet.unt.edu.ar:8081"
-}))
+app.use(cors())
 
-// app.use("/api/auth", authRouter)
 app.use("/api/fisica", fisicaRouter)
-
-// app.use("/public-key", "id_rsa.pub") // formato x.509
 
 // ---------------------------------------------------------------
 

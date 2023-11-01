@@ -1,4 +1,5 @@
 import express from "express"
+
 import { fisicaController } from "../controllers/fisica.controller.js"
 import { convergenteController } from "../controllers/convergente.controller.js"
 import { divergenteController } from "../controllers/divergente.controller.js"
