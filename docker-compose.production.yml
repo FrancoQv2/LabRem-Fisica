@@ -62,7 +62,4 @@ services:
           - labrem-apps-fisica-server
 networks:
   labrem-network:
-    name: labrem-network
-    driver: bridge
-    ipam:
-      driver: default
+    external: true
